@@ -1,26 +1,31 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { keycloakConfig } from '#/utils/session'
+import { createFileRoute } from "@tanstack/react-router";
+import { useAppSession, getKeycloakClient } from "#/utils/session";
+import * as arctic from "arctic";
 
-export const Route = createFileRoute('/api/auth/login')({
+export const Route = createFileRoute("/api/auth/login")({
   server: {
     handlers: {
       GET: async () => {
-        const params = new URLSearchParams({
-          client_id: keycloakConfig.clientId,
-          redirect_uri: keycloakConfig.redirectUri,
-          response_type: 'code',
-          scope: 'openid profile email',
-        })
-        
-        const loginUrl = `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth?${params.toString()}`
-        
+        const session = await useAppSession();
+        const keycloak = getKeycloakClient();
+
+        const state = arctic.generateState();
+        const codeVerifier = arctic.generateCodeVerifier();
+        const scopes = ["openid", "profile", "email"];
+
+        const url = keycloak.createAuthorizationURL(state, codeVerifier, scopes);
+
+        await session.update({
+          codeVerifier,
+        });
+
         return new Response(null, {
           status: 302,
           headers: {
-            Location: loginUrl,
+            Location: url.toString(),
           },
-        })
+        });
       },
     },
   },
-})
+});

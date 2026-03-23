@@ -1,54 +1,54 @@
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react'
+import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 
 interface User {
-  id: string
-  email: string
-  name: string
-  preferredUsername?: string
+  id: string;
+  email: string;
+  name: string;
+  preferredUsername?: string;
 }
 
 interface AuthContextType {
-  user: User | null
-  isLoggedIn: boolean
-  isLoading: boolean
-  login: () => void
-  logout: () => void
+  user: User | null;
+  isLoggedIn: boolean;
+  isLoading: boolean;
+  login: () => void;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function checkAuth() {
       try {
-        const response = await fetch('/api/auth/me')
-        const data = await response.json()
+        const response = await fetch("/api/auth/me");
+        const data = await response.json();
 
         if (data.isLoggedIn) {
-          setUser(data.user)
+          setUser(data.user);
         } else {
-          setUser(null)
+          setUser(null);
         }
       } catch (error) {
-        setUser(null)
+        setUser(null);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
 
-    checkAuth()
-  }, [])
+    checkAuth();
+  }, []);
 
   const login = () => {
-    window.location.href = '/api/auth/login'
-  }
+    window.location.href = "/api/auth/login";
+  };
 
   const logout = () => {
-    window.location.href = '/api/auth/logout'
-  }
+    window.location.href = "/api/auth/logout";
+  };
 
   return (
     <AuthContext.Provider
@@ -62,13 +62,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
 }

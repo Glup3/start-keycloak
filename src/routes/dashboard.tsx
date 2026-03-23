@@ -1,28 +1,28 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { getCurrentUserFn } from '#/utils/auth-server'
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getCurrentUserFn } from "#/utils/auth-server";
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute("/dashboard")({
   beforeLoad: async () => {
-    const user = await getCurrentUserFn()
+    const user = await getCurrentUserFn();
 
     if (!user) {
       throw redirect({
-        to: '/api/auth/login',
+        to: "/api/auth/login",
         reloadDocument: true,
-      })
+      });
     }
 
-    return { user }
+    return { user };
   },
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext()
+  const { user } = Route.useRouteContext();
 
   const handleLogout = () => {
-    window.location.href = '/api/auth/logout'
-  }
+    window.location.href = "/api/auth/logout";
+  };
 
   return (
     <main className="page-wrap px-4 pb-8 pt-14">
@@ -40,5 +40,5 @@ function RouteComponent() {
         </button>
       </section>
     </main>
-  )
+  );
 }
