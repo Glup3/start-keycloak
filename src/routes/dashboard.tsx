@@ -1,5 +1,5 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { getCurrentUserFn, logoutFn } from '#/utils/auth-server'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { getCurrentUserFn } from '#/utils/auth-server'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
@@ -19,11 +19,9 @@ export const Route = createFileRoute('/dashboard')({
 
 function RouteComponent() {
   const { user } = Route.useRouteContext()
-  const navigate = useNavigate()
 
-  const handleLogout = async () => {
-    await logoutFn()
-    navigate({ to: '/' })
+  const handleLogout = () => {
+    window.location.href = '/api/auth/logout'
   }
 
   return (
