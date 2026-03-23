@@ -1,5 +1,5 @@
 {
-  "projectName": "start-iron-sessions",
+  "projectName": "start-keycloak",
   "mode": "file-router",
   "typescript": true,
   "packageManager": "npm",

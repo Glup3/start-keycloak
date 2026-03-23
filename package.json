@@ -1,5 +1,5 @@
 {
-  "name": "start-iron-sessions",
+  "name": "start-keycloak",
   "private": true,
   "type": "module",
   "imports": {
