@@ -1,27 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAppSession } from "#/utils/session";
-import { getValidTokens } from "#/utils/auth-tokens";
+import { authMiddleware } from "#/utils/auth-middleware";
 
 export const Route = createFileRoute("/api/auth/me")({
   server: {
+    middleware: [authMiddleware],
     handlers: {
-      GET: async () => {
-        const session = await useAppSession();
-        const data = session.data;
-
-        if (!data?.isLoggedIn) {
-          return Response.json({ isLoggedIn: false });
-        }
-
-        const tokens = await getValidTokens();
-
-        if (!tokens) {
-          return Response.json({ isLoggedIn: false });
-        }
-
+      GET: ({ context }) => {
         return Response.json({
           isLoggedIn: true,
-          user: data.user,
+          user: context.user,
         });
       },
     },
