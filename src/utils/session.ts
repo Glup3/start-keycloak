@@ -10,9 +10,31 @@ export interface SessionData {
     email: string;
     name: string;
     preferredUsername?: string;
+    roles?: string[];
   };
   isLoggedIn?: boolean;
   codeVerifier?: string;
+}
+
+export function decodeJwtRoles(accessToken: string): string[] {
+  try {
+    const payload = accessToken.split(".")[1];
+    const decoded = JSON.parse(Buffer.from(payload, "base64").toString("utf-8"));
+    const roles: string[] = [];
+
+    if (decoded.realm_access?.roles) {
+      roles.push(...decoded.realm_access.roles);
+    }
+
+    const clientId = process.env.KEYCLOAK_CLIENT_ID || "my-client";
+    if (decoded.resource_access?.[clientId]?.roles) {
+      roles.push(...decoded.resource_access[clientId].roles);
+    }
+
+    return roles;
+  } catch {
+    return [];
+  }
 }
 
 export function useAppSession() {

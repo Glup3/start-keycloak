@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAppSession, getKeycloakClient } from "#/utils/session";
+import { useAppSession, getKeycloakClient, decodeJwtRoles } from "#/utils/session";
 import * as arctic from "arctic";
+
+const REQUIRED_ROLE = "isDitto";
 
 export const Route = createFileRoute("/api/auth/callback")({
   server: {
@@ -44,6 +46,17 @@ export const Route = createFileRoute("/api/auth/callback")({
 
           const userInfo = await userInfoResponse.json();
 
+          const roles = decodeJwtRoles(accessToken);
+
+          if (!roles.includes(REQUIRED_ROLE)) {
+            return new Response(null, {
+              status: 302,
+              headers: {
+                Location: "/unauthorized",
+              },
+            });
+          }
+
           await session.update({
             accessToken,
             refreshToken: refreshToken ?? undefined,
@@ -57,6 +70,7 @@ export const Route = createFileRoute("/api/auth/callback")({
               email: userInfo.email,
               name: userInfo.name || userInfo.preferred_username || userInfo.email,
               preferredUsername: userInfo.preferred_username,
+              roles,
             },
           });
 
